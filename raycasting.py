@@ -5,8 +5,23 @@ from settings import *
 class Raycasting:
     def __init__(self, game):
         self.game = game
+        self.rayCastResult = []
+        self.objectsToRender = []
+        self.textures = self.game.objRender.wallTextures
+
+    def getObjectsToRender(self):
+        self.objectsToRender = []
+        for ray, values in enumerate(self.rayCastResult):
+            depth, projHeight, texture, offset = values
+
+            wallColumn = self.textures[texture].subsurface(offset * (textureSize - scale), 0, scale, textureSize)
+            wallColumn = pg.transform.scale(wallColumn, (scale, projHeight))
+            wallPos = (ray * scale, HALF_HEIGHT - projHeight // 2)
+
+            self.objectsToRender.append((depth, wallColumn, wallPos))
 
     def rayCast(self):
+        self.rayCastResult = []
         ox, oy = self.game.player.position
         xMap, yMap = self.game.player.mapPosition
 
@@ -27,6 +42,7 @@ class Raycasting:
             for i in range(maxDepth):
                 tileHorizontal = int(xHorizontal), int(yHorizontal)
                 if tileHorizontal in self.game.map.worldMap:
+                    textureHorizontal = self.game.map.worldMap[tileHorizontal]
                     break
                 xHorizontal += dx
                 yHorizontal += dy
@@ -44,29 +60,33 @@ class Raycasting:
             for i in range(maxDepth):
                 tileVert = int(xVertical), int(yVertical)
                 if tileVert in self.game.map.worldMap:
+                    textureVertical = self.game.map.worldMap[tileVert]
                     break
                 xVertical += dx
                 yVertical += dy
                 depthVertical += deltaDepth
 
-            # depth
+            # depth, textures offset
             if depthVertical < depthHorizontal:
-                depth = depthVertical
+                depth, texture = depthVertical, textureVertical
+                yVertical %= 1
+                offset = yVertical if cosA > 0 else (1 - yVertical)
             else:
-                depth = depthHorizontal
+                depth, texture = depthHorizontal, textureHorizontal
+                xHorizontal %= 1
+                offset = (1 - xHorizontal) if sinA < 0 else xHorizontal
 
-            # draw
-            #pg.draw.line(self.game.screen, 'yellow', (100 * ox, 100 * oy),
-            #             (100 * ox + 100 * depth * cosA, 100 * oy + 100 * depth * sinA), 2)
+            # remove fish eye effect
+            depth *= math.cos(self.game.player.angle - rayAngle)
 
             # projection
             projHeight = screenDistance / (depth + 0.0001)
 
-            # draw walls
-            pg.draw.rect(self.game.screen, 'white',
-                         (ray * scale, HALF_HEIGHT - projHeight // 2, scale, projHeight))
+            # ray casting result
+            self.rayCastResult.append((depth, projHeight, texture, offset))
 
             rayAngle += deltaAngle
 
     def update(self):
         self.rayCast()
+        self.getObjectsToRender()
