@@ -7,9 +7,18 @@ class objectRender:
         self.game = game
         self.screen = game.screen
         self.wallTextures = self.loadWallTextures()
+        self.skyImage = self.getTexture('resources/textures/sky.png', (WIDTH, HALF_HEIGHT))
+        self.skyOffset = 0
 
     def draw(self):
+        self.drawBackground()
         self.renderGameObjects()
+
+    def drawBackground(self):
+        self.skyOffset = (self.skyOffset + 4.5 * self.game.player.rel) % WIDTH
+        self.screen.blit(self.skyImage, (-self.skyOffset, 0))
+        self.screen.blit(self.skyImage, (-self.skyOffset + WIDTH, 0))
+        pg.draw.rect(self.screen, floorColor, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
 
     def renderGameObjects(self):
         listObjects = self.game.raycasting.objectsToRender

@@ -22,6 +22,10 @@ mouseMaxRel = 40
 mouseBorderLeft = 100
 mouseBorderRight = WIDTH - mouseBorderLeft
 
+# FLOOR SETTINGS
+
+floorColor = (30, 30, 30)
+
 
 # RAYCASTING SETTINGS
 
