@@ -56,8 +56,15 @@ class Raycasting:
                 depth = depthHorizontal
 
             # draw
-            pg.draw.line(self.game.screen, 'yellow', (100 * ox, 100 * oy),
-                         (100 * ox + 100 * depth * cosA, 100 * oy + 100 * depth * sinA), 2)
+            #pg.draw.line(self.game.screen, 'yellow', (100 * ox, 100 * oy),
+            #             (100 * ox + 100 * depth * cosA, 100 * oy + 100 * depth * sinA), 2)
+
+            # projection
+            projHeight = screenDistance / (depth + 0.0001)
+
+            # draw walls
+            pg.draw.rect(self.game.screen, 'white',
+                         (ray * scale, HALF_HEIGHT - projHeight // 2, scale, projHeight))
 
             rayAngle += deltaAngle
 
