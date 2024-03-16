@@ -13,6 +13,14 @@ playerPosition = 1.5, 5
 playerAngle = 0
 playerSpeed = 0.004
 playerRotationSpeed = 0.002
+playerSizeScale = 60
+
+# MOUSE SETTINGS
+
+mouseSensitivity = 0.0003
+mouseMaxRel = 40
+mouseBorderLeft = 100
+mouseBorderRight = WIDTH - mouseBorderLeft
 
 
 # RAYCASTING SETTINGS
