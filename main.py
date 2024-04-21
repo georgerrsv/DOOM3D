@@ -7,6 +7,8 @@ from raycasting import *
 from objRender import *
 from spriteObject import *
 from objectHandler import *
+from weapon import *
+from sound import *
 
 class Game:
     def __init__(self):
@@ -23,11 +25,14 @@ class Game:
         self.objRender = objectRender(self)
         self.raycasting = Raycasting(self)
         self.objectHandler = objectHandler(self)
+        self.weapon = Weapon(self)
+        self.sound = Sound(self)
 
     def update(self):
         self.player.update()
         self.raycasting.update()
         self.objectHandler.update()
+        self.weapon.update()
         pg.display.flip()
         self.deltaTime = self.clock.tick(FPS)
         pg.display.set_caption(f'{self.clock.get_fps() : .1f}')
@@ -35,6 +40,7 @@ class Game:
     def draw(self):
         #self.screen.fill('black')
         self.objRender.draw()
+        self.weapon.draw()
         #self.map.draw()
         #self.player.draw()
 
@@ -43,6 +49,7 @@ class Game:
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
                 pg.quit()
                 sys.exit()
+            self.player.singleFireEvent(event)
     def run(self):
         while True:
             self.checkEvents()
